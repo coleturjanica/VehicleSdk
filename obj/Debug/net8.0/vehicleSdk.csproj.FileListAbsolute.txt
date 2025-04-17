@@ -1,0 +1,5 @@
+/home/coletj/workspace/github.com/coleturjanica/vehicleSdk/obj/Debug/net8.0/vehicleSdk.GeneratedMSBuildEditorConfig.editorconfig
+/home/coletj/workspace/github.com/coleturjanica/vehicleSdk/obj/Debug/net8.0/vehicleSdk.AssemblyInfoInputs.cache
+/home/coletj/workspace/github.com/coleturjanica/vehicleSdk/obj/Debug/net8.0/vehicleSdk.AssemblyInfo.cs
+/home/coletj/workspace/github.com/coleturjanica/vehicleSdk/obj/Debug/net8.0/vehicleSdk.csproj.CoreCompileInputs.cache
+/home/coletj/workspace/github.com/coleturjanica/vehicleSdk/obj/Debug/net8.0/vehicleSdk.sourcelink.json

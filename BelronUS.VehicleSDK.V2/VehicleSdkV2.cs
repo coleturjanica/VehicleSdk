@@ -4,21 +4,21 @@ using BelronUS.Http.HttpClientHelper;
 using BelronUS.Http.HttpClientHelper.Interface;
 using BelronUS.ServiceHelpers.BelronUSJsonSerializerOptions;
 using Microsoft.Extensions.Logging;
-using VehicleSdkV2.Models.Response;
-using VehicleSdkV2.Utilities;
+using BelronUS.VehicleSDK.V2.Models.Response;
+using BelronUS.VehicleSDK.V2.Utilities;
 
-namespace VehicleSdkV2;
+namespace BelronUS.VehicleSDK.V2;
 
-public class VehicleSdkV2Here : IVehicleSdkV2Here
+public class VehicleSdkV2 : IVehicleSdkV2
 {
     private readonly ISecretManager _secretManager;
     private readonly IHttpClientHelper _httpClientHelper;
     private readonly JsonSerializerOptions _jsonSerializerOptions = BelronUSJsonSerializerOptions.GetSerializerOptionsWithIgnoreNull();
     private readonly HttpClient _httpClient;
-    private readonly ILogger<VehicleSdkV2Here> _logger;
+    private readonly ILogger<VehicleSdkV2> _logger;
 
 
-    public VehicleSdkV2Here(ISecretManager secretManager, IHttpClientHelper httpClientHelper, IHttpClientFactory httpClientFactory, ILogger<VehicleSdkV2Here> logger)
+    public VehicleSdkV2(ISecretManager secretManager, IHttpClientHelper httpClientHelper, IHttpClientFactory httpClientFactory, ILogger<VehicleSdkV2> logger)
     {
         _secretManager = secretManager;
         _httpClientHelper = httpClientHelper;

@@ -1,4 +1,4 @@
-namespace VehicleSdkV2.Utilities;
+namespace BelronUS.VehicleSDK.V2.Utilities;
 
 public static class ExternalEndpoints
 {

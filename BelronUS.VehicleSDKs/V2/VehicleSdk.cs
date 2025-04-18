@@ -44,14 +44,14 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Append Query
         var uri = QueryHelpers.AddQueryString(lookupByCarIdVehicleAPiEndpoint, queryStringDictionary);
 
-        request.Headers.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        request.Headers?.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
 
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
             RequestURI = uri,
-            ClientHeaders = request.Headers,
+            ClientHeaders = request.Headers ?? new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
             AutoCheckResponseStatusCode = false
         };
 
@@ -60,7 +60,7 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
-            _logger.LogError("Error calling GetVehicleByCarId. Response: {Response}", response);
+            _logger.LogError("Error calling LookupByAddress. Response: {Response}", response);
 
             return null;
         }
@@ -86,7 +86,7 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
-            _logger.LogError("Error calling GetVehicleByCarId. Response: {Response}", response);
+            _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
 
             return null;
         }

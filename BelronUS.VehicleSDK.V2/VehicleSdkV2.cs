@@ -30,7 +30,7 @@ public class VehicleSdkV2 : IVehicleSdkV2
         Console.WriteLine("hi");
     }
 
-    public async Task<VehicleResponseModel> GetVehicleByCarId(string carId)
+    public async Task<VehicleResponseModel> LookupByCarId(string carId)
     {
         var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{carId}";
         var request = new HttpClientRequestObject

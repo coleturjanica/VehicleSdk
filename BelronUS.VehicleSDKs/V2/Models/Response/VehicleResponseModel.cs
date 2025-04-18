@@ -1,6 +1,8 @@
+using BelronUS.SDK.Base;
+
 namespace BelronUS.VehicleSDKs.V2.Models.Response;
 
-public class VehicleResponseModel
+public class VehicleResponseModel : BaseSdkResponse
 {
     public string CarId { get; set; }
     public int Year { get; set; }

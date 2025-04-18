@@ -1,19 +1,17 @@
 ﻿namespace BelronUS.SDK.Base;
 
-internal interface IBaseSdkModel
+public abstract class BaseSdkResponse
 {
-    string ApplicationName { get; set; }
-    string CorrelationId { get; set; }
+    public string ApplicationName { get; set; }
+    public string CorrelationId { get; set; }
+    public Dictionary<string, string> Headers { get; set; }
+    public int statusCode { get; set; }
 }
 
-interface IBaseSdkRequest : IBaseSdkModel
+public abstract class BaseSdkRequest
 {
-    Dictionary<string, string> Headers { get; set; }
-    string ApiBaseUrl { get; set; }
-}
-
-interface IBaseSdkResponse : IBaseSdkModel
-{
-    Dictionary<string, string> Headers { get; set; }
-    string ApiBaseUrl { get; set; }
+    public string ApplicationName { get; set; }
+    public string CorrelationId { get; set; }
+    public Dictionary<string, string> Headers { get; set; }
+    public string ApiBaseUrl { get; set; }
 }

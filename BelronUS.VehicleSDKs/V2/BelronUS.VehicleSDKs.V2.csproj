@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BelronUS.SDK.Base" Version="1.0.4" />
     <PackageReference Include="BelronUS.ServiceHelpers" Version="1.0.120" />
     <PackageReference Include="BelronUS.Http" Version="1.0.60" />
   </ItemGroup>

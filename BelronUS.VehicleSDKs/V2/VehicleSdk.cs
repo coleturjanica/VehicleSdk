@@ -4,27 +4,18 @@ using BelronUS.Http.HttpClientHelper;
 using BelronUS.Http.HttpClientHelper.Interface;
 using BelronUS.ServiceHelpers.BelronUSJsonSerializerOptions;
 using Microsoft.Extensions.Logging;
-using BelronUS.VehicleSDK.V2.Models.Response;
-using BelronUS.VehicleSDK.V2.Utilities;
+using BelronUS.VehicleSDKs.V2.Models.Response;
+using BelronUS.VehicleSDKs.V2.Utilities;
 
-namespace BelronUS.VehicleSDK.V2;
+namespace BelronUS.VehicleSDKs.V2;
 
-public class VehicleSdkV2 : IVehicleSdkV2
+public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClientHelper, IHttpClientFactory httpClientFactory, ILogger<VehicleSdk> logger) : IVehicleSdk
 {
-    private readonly ISecretManager _secretManager;
-    private readonly IHttpClientHelper _httpClientHelper;
+    private readonly ISecretManager _secretManager = secretManager;
+    private readonly IHttpClientHelper _httpClientHelper = httpClientHelper;
     private readonly JsonSerializerOptions _jsonSerializerOptions = BelronUSJsonSerializerOptions.GetSerializerOptionsWithIgnoreNull();
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<VehicleSdkV2> _logger;
-
-
-    public VehicleSdkV2(ISecretManager secretManager, IHttpClientHelper httpClientHelper, IHttpClientFactory httpClientFactory, ILogger<VehicleSdkV2> logger)
-    {
-        _secretManager = secretManager;
-        _httpClientHelper = httpClientHelper;
-        _httpClient = httpClientFactory.CreateClient();
-        _logger = logger;
-    }
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
+    private readonly ILogger<VehicleSdk> _logger = logger;
 
     public void printHi() {
         Console.WriteLine("hi");

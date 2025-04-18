@@ -1,4 +1,4 @@
-namespace BelronUS.VehicleSDK.V2.Models.Response;
+namespace BelronUS.VehicleSDKs.V2.Models.Response;
 
 public class VehicleResponseModel
 {

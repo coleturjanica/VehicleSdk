@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using BelronUS.VehicleSDKs.V2.Models.Response;
 using BelronUS.VehicleSDKs.V2.Utilities;
 using BelronUS.VehicleSDKs.V2.Models.Request;
-using BelronUS.SDK.Base;
+using BelronUS.SDK.Base.Helpers;
 
 namespace BelronUS.VehicleSDKs.V2;
 

@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BelronUS.SDK.Base", "BelronUS.SDK.Base\BelronUS.SDK.Base.csproj", "{A136ED50-ACCA-4577-9340-97B79541C9B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BelronUS.VehicleSDKs", "BelronUS.VehicleSDKs", "{45940B3C-471C-46BC-8272-3E8F55A6A5AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BelronUS.VehicleSDKs.V2", "BelronUS.VehicleSDKs\V2\BelronUS.VehicleSDKs.V2.csproj", "{7C63C359-00DC-482B-8F95-657A4906BF1C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A136ED50-ACCA-4577-9340-97B79541C9B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A136ED50-ACCA-4577-9340-97B79541C9B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A136ED50-ACCA-4577-9340-97B79541C9B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A136ED50-ACCA-4577-9340-97B79541C9B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C63C359-00DC-482B-8F95-657A4906BF1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C63C359-00DC-482B-8F95-657A4906BF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C63C359-00DC-482B-8F95-657A4906BF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C63C359-00DC-482B-8F95-657A4906BF1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7C63C359-00DC-482B-8F95-657A4906BF1C} = {45940B3C-471C-46BC-8272-3E8F55A6A5AB}
+	EndGlobalSection
+EndGlobal

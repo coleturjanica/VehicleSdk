@@ -6,6 +6,8 @@ using BelronUS.ServiceHelpers.BelronUSJsonSerializerOptions;
 using Microsoft.Extensions.Logging;
 using BelronUS.VehicleSDKs.V2.Models.Response;
 using BelronUS.VehicleSDKs.V2.Utilities;
+using BelronUS.VehicleSDKs.V2.Models.Request;
+using BelronUS.SDK.Base;
 
 namespace BelronUS.VehicleSDKs.V2;
 
@@ -17,14 +19,43 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
     private readonly ILogger<VehicleSdk> _logger = logger;
 
-    public void printHi() {
-        Console.WriteLine("hi");
+    public async Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request)
+    {
+        // Get the base URL from the secret manager
+        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByAddress}";
+
+        // Append Query
+        var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleAPiEndpoint, request);
+
+        var clientHeaders = request.Headers ?? [];
+        clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+
+        // Construct Request, Send and Receive
+        var httpRequest = new HttpClientRequestObject
+        {
+            HttpMethod = HttpMethod.Get,
+            RequestURI = uri,
+            ClientHeaders = clientHeaders,
+            AutoCheckResponseStatusCode = false
+        };
+
+        var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, httpRequest);
+
+        if (!httpResponseMessage.IsSuccessStatusCode)
+        {
+            var response = await httpResponseMessage.Content.ReadAsStringAsync();
+            _logger.LogError("Error calling LookupByAddress. Response: {Response}", response);
+
+            return null;
+        }
+
+        return await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
     }
 
-    public async Task<VehicleResponseModel> LookupByCarId(string carId)
+    public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
     {
-        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{carId}";
-        var request = new HttpClientRequestObject
+        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+        var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
             RequestURI = lookupByCarIdVehicleAPiEndpoint,
@@ -32,18 +63,16 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             AutoCheckResponseStatusCode = false
         };
 
-        var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, request);
+        var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, httpRequest);
 
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
-            _logger.LogError("Error calling GetVehicleByCarId. Response: {Response}", response);
+            _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
 
             return null;
         }
 
-        var objectFromResponseContent = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
-
-        return objectFromResponseContent;
+        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
     }
 }

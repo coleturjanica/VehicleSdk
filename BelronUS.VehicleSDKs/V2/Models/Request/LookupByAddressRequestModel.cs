@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using BelronUS.SDK.Base;
 
 namespace BelronUS.VehicleSDKs.V2.Models.Request;
@@ -18,14 +19,13 @@ namespace BelronUS.VehicleSDKs.V2.Models.Request;
 public class LookupByAddressRequestModel : BaseSdkRequest
 {
     public string FirstName { get; set; }
-    
+    [Required]
     public string LastName { get; set; }
-    
+    [Required]
     public string RegisteredStreetAddress { get; set; }
-    
     public string City { get; set; }
-
+    [Required]
     public string State { get; set; }
-
+    [Required]
     public string Zip { get; set; }
 }

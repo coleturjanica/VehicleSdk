@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.WebUtilities;
 
 namespace BelronUS.SDK.Base;
 
@@ -10,7 +9,7 @@ public static class QueryStringHelper
         // Use reflection to get all properties of the request object
         var queryStringDictionary = new Dictionary<string, string>();
 
-        foreach (var property in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        foreach (var property in typeof(T).GetProperties())
         {
             var value = property.GetValue(request)?.ToString();
             if (!string.IsNullOrEmpty(value))

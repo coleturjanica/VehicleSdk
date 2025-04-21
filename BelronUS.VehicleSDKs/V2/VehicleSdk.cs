@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using BelronUS.VehicleSDKs.V2.Models.Response;
 using BelronUS.VehicleSDKs.V2.Utilities;
 using BelronUS.VehicleSDKs.V2.Models.Request;
-using Microsoft.AspNetCore.WebUtilities;
+using BelronUS.SDK.Base;
 
 namespace BelronUS.VehicleSDKs.V2;
 
@@ -24,25 +24,8 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Get the base URL from the secret manager
         var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByAddress}";
 
-        // Construct Query, adding non-required fields if they are not null or empty
-        var queryStringDictionary = new Dictionary<string, string>
-        {
-            { nameof(request.LastName), request.LastName },
-            { nameof(request.RegisteredStreetAddress), request.RegisteredStreetAddress },
-            { nameof(request.State), request.State },
-            { nameof(request.Zip), request.Zip }
-        };
-        if (!string.IsNullOrEmpty(request.FirstName))
-        {
-            queryStringDictionary.Add(nameof(request.FirstName), request.FirstName);
-        }
-        if (!string.IsNullOrEmpty(request.City))
-        {
-            queryStringDictionary.Add(nameof(request.City), request.City);
-        }
-
         // Append Query
-        var uri = QueryHelpers.AddQueryString(lookupByCarIdVehicleAPiEndpoint, queryStringDictionary);
+        var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleAPiEndpoint, request);
 
         var clientHeaders = request.Headers ?? [];
         clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
@@ -66,9 +49,7 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        var objectFromResponseContent = await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
-
-        return objectFromResponseContent;
+        return await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
     }
 
     public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
@@ -92,8 +73,6 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        var objectFromResponseContent = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
-
-        return objectFromResponseContent;
+        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
     }
 }

@@ -5,10 +5,10 @@ namespace BelronUS.VehicleSDKs.V2.Models.Request;
 
 
 /// <summary>
-/// Represents the fields involved in searching for a vehicle by an address.
+/// Represents a request model used to search for a vehicle by its address.
 /// </summary>
 /// <remarks>
-/// The following fields are required:
+/// The following properties are required:
 /// <list type="bullet">
 /// <item><description>LastName</description></item>
 /// <item><description>RegisteredStreetAddress</description></item>

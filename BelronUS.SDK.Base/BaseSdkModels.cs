@@ -1,19 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BelronUS.SDK.Base.Helpers;
 
 namespace BelronUS.SDK.Base;
 
-public abstract class BaseSdkResponse
-{
-    [Required]
-    public string ApplicationName { get; set; }
-    [Required]
-    public string CorrelationId { get; set; }
-    [Required]
-    public Dictionary<string, string> Headers { get; set; }
-    [Required]
-    public int StatusCode { get; set; }
-}
-
+/// <summary>
+/// Represents the base response model from any API call.
+/// </summary>
+/// <remarks>
+/// The following properties are required:
+/// <list type="bullet">
+/// <item><description>ApplicationName</description></item>
+/// <item><description>CorrelationId</description></item>
+/// <item><description>Headers</description></item>
+/// <item><description>ApiBaseUrl</description></item>
+/// </list>
+/// </remarks>
 public abstract class BaseSdkRequest
 {
     [Required]
@@ -24,4 +25,32 @@ public abstract class BaseSdkRequest
     public Dictionary<string, string> Headers { get; set; }
     [Required]
     public string ApiBaseUrl { get; set; }
+    public void Validate()
+    {
+        RequiredHelper.HasRequired(this);
+    }
+}
+
+/// <summary>
+/// Represents the base request model used in any API call.
+/// </summary>
+/// <remarks>
+/// The following properties are required:
+/// <list type="bullet">
+/// <item><description>ApplicationName</description></item>
+/// <item><description>CorrelationId</description></item>
+/// <item><description>Headers</description></item>
+/// <item><description>StatusCode</description></item>
+/// </list>
+/// </remarks>
+public abstract class BaseSdkResponse
+{
+    [Required]
+    public string ApplicationName { get; set; }
+    [Required]
+    public string CorrelationId { get; set; }
+    [Required]
+    public Dictionary<string, string> Headers { get; set; }
+    [Required]
+    public int StatusCode { get; set; }
 }

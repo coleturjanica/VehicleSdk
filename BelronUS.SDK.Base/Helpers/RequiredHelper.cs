@@ -1,26 +1,30 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace BelronUS.SDK.Base.Helpers;
 
-
-// TODO Make this throw an array of all unmet required fields, not just the first one.
 public static class RequiredHelper
 {
     public static bool HasRequired<T>(T request)
     {
+        var missingRequiredFields = new List<string>();
+
         // Loop through all properties of the request object
-        foreach (var property in typeof(T).GetProperties())
+        foreach (var property in typeof(T).GetProperties().Where(p => Attribute.IsDefined(p, typeof(RequiredAttribute))))
         {
-            // Check if the property has the [Required] attribute
-            if (Attribute.IsDefined(property, typeof(RequiredAttribute)))
+            // Get the value of the property
+            var value = property.GetValue(request);
+            if (value == null || (value is string str && string.IsNullOrEmpty(str)))
             {
-                // Get the value of the property
-                var value = property.GetValue(request);
-                if (value == null || (value is string str && string.IsNullOrEmpty(str)))
-                {
-                    throw new ValidationException($"The property '{property.Name}' is required and cannot be null or empty.");
-                }
+                missingRequiredFields.Add(property.Name);
             }
+        }
+
+        if (missingRequiredFields.Any())
+        {
+            var errorMessage = new StringBuilder("The following required properties are missing or empty: ");
+            errorMessage.Append(string.Join(", ", missingRequiredFields));
+            throw new ValidationException(errorMessage.ToString());
         }
 
         return true;

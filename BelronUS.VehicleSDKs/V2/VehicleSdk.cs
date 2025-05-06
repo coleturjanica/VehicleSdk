@@ -22,10 +22,10 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     public async Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request)
     {
         // Get the base URL from the secret manager
-        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByAddress}";
+        var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByAddress}";
 
         // Append Query
-        var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleAPiEndpoint, request);
+        var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleApiEndpoint, request);
 
         var clientHeaders = request.Headers ?? [];
         clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
@@ -55,13 +55,13 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
     {
         // Get the base URL from the secret manager
-        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+        var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
         
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
-            RequestURI = lookupByCarIdVehicleAPiEndpoint,
+            RequestURI = lookupByCarIdVehicleApiEndpoint,
             ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
             AutoCheckResponseStatusCode = false
         };
@@ -82,13 +82,13 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     public async Task<VehicleResponseModel> LookupByVin(LookupByVinRequestModel request)
     {
         // Get the base URL from the secret manager
-        var lookupByVINVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
+        var lookupByVinVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
         
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
-            RequestURI = lookupByVINVehicleAPiEndpoint,
+            RequestURI = lookupByVinVehicleApiEndpoint,
             ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
             AutoCheckResponseStatusCode = false
         };
@@ -105,4 +105,6 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
 
         return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
     }
+
+    
 }

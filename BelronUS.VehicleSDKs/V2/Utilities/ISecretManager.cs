@@ -27,6 +27,7 @@ public class SecretManager : ISecretManager
     {
         return GetEnvironmentVariable(ORIGIN_VERIFY_SECRET);
     }
+    
     #region Private Methods
     /// <summary>
     /// Used to pull environment variable values, Exception thrown if the value is empty or null.

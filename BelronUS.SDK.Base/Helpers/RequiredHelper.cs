@@ -20,6 +20,7 @@ public static class RequiredHelper
             }
         }
 
+        // If there are any missing required fields, throw a ValidationException
         if (missingRequiredFields.Any())
         {
             var errorMessage = new StringBuilder("The following required properties are missing or empty: ");

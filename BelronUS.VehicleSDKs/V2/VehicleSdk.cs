@@ -54,7 +54,10 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
 
     public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
     {
+        // Get the base URL from the secret manager
         var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+        
+        // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
@@ -69,6 +72,33 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         {
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
             _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
+
+            return null;
+        }
+
+        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+    }
+
+    public async Task<VehicleResponseModel> LookupByVin(LookupByVinRequestModel request)
+    {
+        // Get the base URL from the secret manager
+        var lookupByVINVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
+        
+        // Construct Request, Send and Receive
+        var httpRequest = new HttpClientRequestObject
+        {
+            HttpMethod = HttpMethod.Get,
+            RequestURI = lookupByVINVehicleAPiEndpoint,
+            ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
+            AutoCheckResponseStatusCode = false
+        };
+
+        var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, httpRequest);
+
+        if (!httpResponseMessage.IsSuccessStatusCode)
+        {
+            var response = await httpResponseMessage.Content.ReadAsStringAsync();
+            _logger.LogError("Error calling GetVehicleByVIN. Response: {Response}", response);
 
             return null;
         }

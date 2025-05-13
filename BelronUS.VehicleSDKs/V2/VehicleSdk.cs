@@ -76,7 +76,20 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+        var vehicleResponse = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+
+        // Map BaseSdkResponse fields
+        if (vehicleResponse != null)
+        {
+            // app name reponse should be where its sent to
+            // pull from httpResponseMessage for all other fields and not map them
+            vehicleResponse.ApplicationName = request.ApplicationName;
+            vehicleResponse.CorrelationId = request.CorrelationId;
+            vehicleResponse.Headers = request.Headers;
+            vehicleResponse.StatusCode = (int)httpResponseMessage.StatusCode;
+        }
+
+        return vehicleResponse;
     }
 
     public async Task<VehicleResponseModel> LookupByVin(LookupByVinRequestModel request)
@@ -104,7 +117,5 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         }
 
         return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
-    }
-
-    
+    }    
 }

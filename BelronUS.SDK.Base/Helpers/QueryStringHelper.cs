@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 
-namespace BelronUS.SDK.Base;
+namespace BelronUS.SDK.Base.Helpers;
 
 public static class QueryStringHelper
 {

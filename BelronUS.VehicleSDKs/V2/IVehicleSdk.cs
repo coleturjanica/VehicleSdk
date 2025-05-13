@@ -7,4 +7,5 @@ public interface IVehicleSdk
 {
     Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request);
     Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request);
+    Task<VehicleResponseModel> LookupByVin(LookupByVinRequestModel request);
 }

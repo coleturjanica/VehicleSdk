@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using BelronUS.VehicleSDKs.V2.Models.Response;
 using BelronUS.VehicleSDKs.V2.Utilities;
 using BelronUS.VehicleSDKs.V2.Models.Request;
-using BelronUS.SDK.Base;
+using BelronUS.SDK.Base.Helpers;
 
 namespace BelronUS.VehicleSDKs.V2;
 
@@ -22,10 +22,10 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     public async Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request)
     {
         // Get the base URL from the secret manager
-        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByAddress}";
+        var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByAddress}";
 
         // Append Query
-        var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleAPiEndpoint, request);
+        var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleApiEndpoint, request);
 
         var clientHeaders = request.Headers ?? [];
         clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
@@ -54,11 +54,14 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
 
     public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
     {
-        var lookupByCarIdVehicleAPiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+        // Get the base URL from the secret manager
+        var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+        
+        // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
-            RequestURI = lookupByCarIdVehicleAPiEndpoint,
+            RequestURI = lookupByCarIdVehicleApiEndpoint,
             ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
             AutoCheckResponseStatusCode = false
         };
@@ -73,6 +76,46 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+        var vehicleResponse = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+
+        // Map BaseSdkResponse fields
+        if (vehicleResponse != null)
+        {
+            // app name reponse should be where its sent to
+            // pull from httpResponseMessage for all other fields and not map them
+            vehicleResponse.ApplicationName = request.ApplicationName;
+            vehicleResponse.CorrelationId = request.CorrelationId;
+            vehicleResponse.Headers = request.Headers;
+            vehicleResponse.StatusCode = (int)httpResponseMessage.StatusCode;
+        }
+
+        return vehicleResponse;
     }
+
+    public async Task<VehicleResponseModel> LookupByVin(LookupByVinRequestModel request)
+    {
+        // Get the base URL from the secret manager
+        var lookupByVinVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
+        
+        // Construct Request, Send and Receive
+        var httpRequest = new HttpClientRequestObject
+        {
+            HttpMethod = HttpMethod.Get,
+            RequestURI = lookupByVinVehicleApiEndpoint,
+            ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
+            AutoCheckResponseStatusCode = false
+        };
+
+        var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, httpRequest);
+
+        if (!httpResponseMessage.IsSuccessStatusCode)
+        {
+            var response = await httpResponseMessage.Content.ReadAsStringAsync();
+            _logger.LogError("Error calling GetVehicleByVIN. Response: {Response}", response);
+
+            return null;
+        }
+
+        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+    }    
 }

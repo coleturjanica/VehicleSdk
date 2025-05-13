@@ -1,0 +1,42 @@
+Putting here while project is on pause:
+
+    public class TestModel
+    {
+        public string CarId { get; set; }
+    }
+
+
+    [MapToApiVersion("2.0")]
+    [HttpGet("test/test-lookup-carid")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VehicleResponseModel))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+    public async Task<IActionResult> TestLookupByCarId([FromQuery] TestModel testinput)
+    {
+        var request = new LookupByCarIdRequestModel
+        {
+            ApplicationName = "TestApp",
+            CorrelationId = Guid.NewGuid().ToString(),
+            ApiBaseUrl = "https://api.example.com",
+            Headers = new Dictionary<string, string>
+            {
+                { "X-Api-Key", "test" }
+            },
+            CarId = testinput.CarId
+        };
+        request.Validate();
+
+        var result = await _vehicleSdk.LookupByCarId(request);
+        return Ok(result);
+    }
+
+    [MapToApiVersion("2.0")]
+    [HttpGet("test/test-lookup-address")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<VehicleResponseModel>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+    public async Task<IActionResult> TestLookupByAddress([FromQuery] LookupByAddressRequestModel request)
+    {
+        var result = await _vehicleSdk.LookupByAddress(request);
+        return Ok(result);
+    }

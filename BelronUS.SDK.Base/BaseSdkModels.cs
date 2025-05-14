@@ -25,6 +25,7 @@ public abstract class BaseSdkRequest
     public Dictionary<string, string> Headers { get; set; }
     [Required]
     public string ApiBaseUrl { get; set; }
+    
     public void Validate()
     {
         RequiredHelper.HasRequired(this);

@@ -20,13 +20,17 @@ public abstract class BaseSdkRequest
     [Required]
     public string ApplicationName { get; set; }
     [Required]
-    public string CorrelationId { get; set; }
+    public Guid CorrelationId { get; set; }
     [Required]
     public Dictionary<string, string> Headers { get; set; }
     [Required]
     public string ApiBaseUrl { get; set; }
-    
-    public void Validate()
+    [Required]
+    public string ClientId { get; set; }
+    [Required]
+    public string ClientSecret { get; set; }
+
+    public virtual void Validate()
     {
         RequiredHelper.HasRequired(this);
     }
@@ -47,7 +51,7 @@ public abstract class BaseSdkRequest
 public abstract class BaseSdkResponse
 {
     public string ApplicationName { get; set; }
-    public string CorrelationId { get; set; }
+    public Guid CorrelationId { get; set; }
     public Dictionary<string, string> Headers { get; set; }
     public int StatusCode { get; set; }
 }

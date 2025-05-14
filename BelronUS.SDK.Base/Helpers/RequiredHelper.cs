@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+using System.Text;
 
 namespace BelronUS.SDK.Base.Helpers;
 
@@ -21,8 +21,9 @@ public static class RequiredHelper
         // If there are any missing required fields, create the error message
         if (missingRequiredFields.Any())
         {
-            var errorMessage = $"The following required properties are missing or empty: {string.Join(", ", missingRequiredFields)}";
-            throw new ValidationException(errorMessage);
+            var errorMessage = new StringBuilder("The following required properties are missing or empty: ");
+            errorMessage.Append(string.Join(", ", missingRequiredFields));
+            throw new ValidationException(errorMessage.ToString());
         }
         
         return true;

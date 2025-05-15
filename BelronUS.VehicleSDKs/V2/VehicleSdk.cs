@@ -8,6 +8,7 @@ using BelronUS.VehicleSDKs.V2.Models.Response;
 using BelronUS.VehicleSDKs.V2.Utilities;
 using BelronUS.VehicleSDKs.V2.Models.Request;
 using BelronUS.SDK.Base.Helpers;
+using BelronUS.SDK.Base;
 
 namespace BelronUS.VehicleSDKs.V2;
 
@@ -19,6 +20,14 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
     private readonly ILogger<VehicleSdk> _logger = logger;
 
+    public T CreateRequest<T>(Action<T> initializer) where T : BaseSdkRequest, new()
+    {
+        var instance = new T();
+        initializer(instance);
+        instance.Validate();
+        return instance;
+    }
+
     public async Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request)
     {
         // Get the base URL from the secret manager
@@ -27,7 +36,7 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Append Query
         var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleApiEndpoint, request);
 
-        var clientHeaders = request.Headers ?? [];
+        var clientHeaders = request.BaseHeaders ?? [];
         clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
 
         // Construct Request, Send and Receive
@@ -83,10 +92,10 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         {
             // app name reponse should be where its sent to
             // pull from httpResponseMessage for all other fields and not map them
-            vehicleResponse.ApplicationName = request.ApplicationName;
-            vehicleResponse.CorrelationId = request.CorrelationId;
-            vehicleResponse.Headers = request.Headers;
-            vehicleResponse.StatusCode = (int)httpResponseMessage.StatusCode;
+            vehicleResponse.BaseApplicationName = request.BaseApplicationName;
+            vehicleResponse.BaseCorrelationId = request.BaseCorrelationId;
+            vehicleResponse.BaseHeaders = request.BaseHeaders;
+            vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
         }
 
         return vehicleResponse;

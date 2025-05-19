@@ -36,8 +36,11 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Append Query
         var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleApiEndpoint, request);
 
+        // BaseHeaders is confusing because correlationId is a header and might need to be added like sercretmanager is from the request
         var clientHeaders = request.BaseHeaders ?? [];
         clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
+        clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
 
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
@@ -58,20 +61,48 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
+        var vehicleResponses = await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
+
+        // Map BaseSdkResponse fields to each item in the list
+        if (vehicleResponses != null)
+        {
+            var appName = httpResponseMessage.Headers.GetValues("X-Application-Name").FirstOrDefault();
+            var correlationIdHeader = httpResponseMessage.Headers.GetValues("X-Correlation-Id").FirstOrDefault();
+            var correlationId = Guid.Parse(correlationIdHeader);
+
+            var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+            baseHeaders.Remove("X-Application-Name");
+            baseHeaders.Remove("X-Correlation-Id");
+            var statusCode = (int)httpResponseMessage.StatusCode;
+
+            foreach (var item in vehicleResponses)
+            {
+                item.BaseApplicationName = appName;
+                item.BaseCorrelationId = correlationId;
+                item.BaseHeaders = baseHeaders;
+                item.BaseStatusCode = statusCode;
+            }
+        }
+
+        return vehicleResponses;
     }
 
     public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
     {
         // Get the base URL from the secret manager
         var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+
+        var clientHeaders = request.BaseHeaders ?? [];
+        clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
+        clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
         
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
             RequestURI = lookupByCarIdVehicleApiEndpoint,
-            ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
+            ClientHeaders = clientHeaders,
             AutoCheckResponseStatusCode = false
         };
 
@@ -90,11 +121,13 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Map BaseSdkResponse fields
         if (vehicleResponse != null)
         {
-            // app name reponse should be where its sent to
-            // pull from httpResponseMessage for all other fields and not map them
-            vehicleResponse.BaseApplicationName = request.BaseApplicationName;
-            vehicleResponse.BaseCorrelationId = request.BaseCorrelationId;
-            vehicleResponse.BaseHeaders = request.BaseHeaders;
+            vehicleResponse.BaseApplicationName = httpResponseMessage.Headers.GetValues("X-Application-Name").FirstOrDefault();
+            var correlationIdHeader = httpResponseMessage.Headers.GetValues("X-Correlation-Id").FirstOrDefault();
+            vehicleResponse.BaseCorrelationId = Guid.Parse(correlationIdHeader);
+            var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+            baseHeaders.Remove("X-Application-Name");
+            baseHeaders.Remove("X-Correlation-Id");
+            vehicleResponse.BaseHeaders = baseHeaders;
             vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
         }
 
@@ -105,13 +138,18 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     {
         // Get the base URL from the secret manager
         var lookupByVinVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
-        
+
+        var clientHeaders = request.BaseHeaders ?? [];
+        clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
+        clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
             RequestURI = lookupByVinVehicleApiEndpoint,
-            ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
+            ClientHeaders = clientHeaders,
             AutoCheckResponseStatusCode = false
         };
 
@@ -125,6 +163,21 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+        var vehicleResponse = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+
+        // Map BaseSdkResponse fields
+        if (vehicleResponse != null)
+        {
+            vehicleResponse.BaseApplicationName = httpResponseMessage.Headers.GetValues("X-Application-Name").FirstOrDefault();
+            var correlationIdHeader = httpResponseMessage.Headers.GetValues("X-Correlation-Id").FirstOrDefault();
+            vehicleResponse.BaseCorrelationId = Guid.Parse(correlationIdHeader);
+            var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+            baseHeaders.Remove("X-Application-Name");
+            baseHeaders.Remove("X-Correlation-Id");
+            vehicleResponse.BaseHeaders = baseHeaders;
+            vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
+        }
+        
+        return vehicleResponse;
     }    
 }

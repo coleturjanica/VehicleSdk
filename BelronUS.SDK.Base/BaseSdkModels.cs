@@ -1,60 +1,63 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using BelronUS.SDK.Base.Helpers;
 
-namespace BelronUS.SDK.Base;
-
-/// <summary>
-/// Represents the base response model from any API call.
-/// </summary>
-/// <remarks>
-/// The following properties are required:
-/// <list type="bullet">
-/// <item><description>ApplicationName</description></item>
-/// <item><description>CorrelationId</description></item>
-/// <item><description>Headers</description></item>
-/// <item><description>ApiBaseUrl</description></item>
-/// </list>
-/// </remarks>
-public abstract class BaseSdkRequest
+namespace BelronUS.SDK.Base
 {
-    [Required]
-    public string BaseApplicationName { get; set; }
-    [Required]
-    public Guid BaseCorrelationId { get; set; }
-    [Required]
-    public Dictionary<string, string> BaseHeaders { get; set; }
-    [Required]
-    public string BaseApiBaseUrl { get; set; }
-    [Required]
-    public string BaseClientId { get; set; }
-    [Required]
-    public string BaseClientSecret { get; set; }
-
-    public virtual void Validate()
+    /// <summary>
+    /// Represents the base response model from any API call.
+    /// </summary>
+    /// <remarks>
+    /// The following properties are required:
+    /// <list type="bullet">
+    /// <item><description>ApplicationName</description></item>
+    /// <item><description>CorrelationId</description></item>
+    /// <item><description>Headers</description></item>
+    /// <item><description>ApiBaseUrl</description></item>
+    /// </list>
+    /// </remarks>
+    public abstract class BaseSdkRequest
     {
-        RequiredHelper.HasRequired(this);
+        [Required]
+        public string BaseApplicationName { get; set; }
+        [Required]
+        public Guid BaseCorrelationId { get; set; }
+        [Required]
+        public Dictionary<string, string> BaseHeaders { get; set; }
+        [Required]
+        public string BaseApiBaseUrl { get; set; }
+        [Required]
+        public string BaseClientId { get; set; }
+        [Required]
+        public string BaseClientSecret { get; set; }
 
-        if (BaseCorrelationId == Guid.Empty)
+        public virtual void Validate()
+        {
+            RequiredHelper.HasRequired(this);
+
+            if (BaseCorrelationId == Guid.Empty)
+        {
+            throw new ValidationException("BaseCorrelationId must not be Empty.");
+        }
+        }
+    }
+
+    /// <summary>
+    /// Represents the base request model used in any API call.
+    /// </summary>
+    /// <remarks>
+    /// The following properties are required:
+    /// <list type="bullet">
+    /// <item><description>ApplicationName</description></item>
+    /// <item><description>CorrelationId</description></item>
+    /// <item><description>Headers</description></item>
+    /// <item><description>StatusCode</description></item>
+    /// </list>
+    /// </remarks>
+    public abstract class BaseSdkResponse
     {
-        throw new ValidationException("BaseCorrelationId must not be Empty.");
+        public Dictionary<string, string> BaseHeaders { get; set; }
+        public int BaseStatusCode { get; set; }
     }
-    }
-}
-
-/// <summary>
-/// Represents the base request model used in any API call.
-/// </summary>
-/// <remarks>
-/// The following properties are required:
-/// <list type="bullet">
-/// <item><description>ApplicationName</description></item>
-/// <item><description>CorrelationId</description></item>
-/// <item><description>Headers</description></item>
-/// <item><description>StatusCode</description></item>
-/// </list>
-/// </remarks>
-public abstract class BaseSdkResponse
-{
-    public Dictionary<string, string> BaseHeaders { get; set; }
-    public int BaseStatusCode { get; set; }
 }

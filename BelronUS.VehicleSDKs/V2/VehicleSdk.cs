@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json;
 using BelronUS.Http.HttpClientHelper;
 using BelronUS.Http.HttpClientHelper.Interface;

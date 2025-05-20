@@ -1,8 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-
-namespace BelronUS.SDK.Base.Helpers;
-
 public static class RequiredHelper
 {
     public static bool HasRequired<T>(T request)

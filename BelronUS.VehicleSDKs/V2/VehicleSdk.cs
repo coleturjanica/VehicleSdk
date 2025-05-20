@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json;
 using BelronUS.Http.HttpClientHelper;
 using BelronUS.Http.HttpClientHelper.Interface;
@@ -8,6 +8,7 @@ using BelronUS.VehicleSDKs.V2.Models.Response;
 using BelronUS.VehicleSDKs.V2.Utilities;
 using BelronUS.VehicleSDKs.V2.Models.Request;
 using BelronUS.SDK.Base.Helpers;
+using BelronUS.SDK.Base;
 
 namespace BelronUS.VehicleSDKs.V2;
 
@@ -19,6 +20,14 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
     private readonly ILogger<VehicleSdk> _logger = logger;
 
+    public T CreateRequest<T>(Action<T> initializer) where T : BaseSdkRequest, new()
+    {
+        var instance = new T();
+        initializer(instance);
+        instance.Validate();
+        return instance;
+    }
+
     public async Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request)
     {
         // Get the base URL from the secret manager
@@ -27,8 +36,11 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Append Query
         var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleApiEndpoint, request);
 
-        var clientHeaders = request.Headers ?? [];
+        // BaseHeaders is confusing because correlationId is a header and might need to be added like sercretmanager is from the request
+        var clientHeaders = request.BaseHeaders ?? [];
         clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
+        clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
 
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
@@ -49,44 +61,65 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
+        var vehicleResponses = await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<VehicleResponseModel>>(_jsonSerializerOptions);
+
+        // Map BaseSdkResponse fields to each item in the list
+        if (vehicleResponses != null)
+        {
+            var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+            var statusCode = (int)httpResponseMessage.StatusCode;
+
+            foreach (var item in vehicleResponses)
+            {
+                item.BaseHeaders = baseHeaders;
+                item.BaseStatusCode = statusCode;
+            }
+        }
+
+        return vehicleResponses;
     }
 
     public async Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request)
     {
         // Get the base URL from the secret manager
         var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
+
+        var clientHeaders = request.BaseHeaders ?? [];
+        clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
+        clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
         
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
             RequestURI = lookupByCarIdVehicleApiEndpoint,
-            ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
+            ClientHeaders = clientHeaders,
             AutoCheckResponseStatusCode = false
         };
 
         var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, httpRequest);
 
-        if (!httpResponseMessage.IsSuccessStatusCode)
+        foreach (var header in httpResponseMessage.Headers)
         {
-            var response = await httpResponseMessage.Content.ReadAsStringAsync();
-            _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
-
-            return null;
+            Console.WriteLine($"Header: {header.Key} = {string.Join(",", header.Value)}");
         }
+
+            if (!httpResponseMessage.IsSuccessStatusCode)
+            {
+                var response = await httpResponseMessage.Content.ReadAsStringAsync();
+                _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
+
+                return null;
+            }
 
         var vehicleResponse = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
 
         // Map BaseSdkResponse fields
         if (vehicleResponse != null)
         {
-            // app name reponse should be where its sent to
-            // pull from httpResponseMessage for all other fields and not map them
-            vehicleResponse.ApplicationName = request.ApplicationName;
-            vehicleResponse.CorrelationId = request.CorrelationId;
-            vehicleResponse.Headers = request.Headers;
-            vehicleResponse.StatusCode = (int)httpResponseMessage.StatusCode;
+            vehicleResponse.BaseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+            vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
         }
 
         return vehicleResponse;
@@ -96,13 +129,18 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
     {
         // Get the base URL from the secret manager
         var lookupByVinVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
-        
+
+        var clientHeaders = request.BaseHeaders ?? [];
+        clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
+        clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
+        clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+
         // Construct Request, Send and Receive
         var httpRequest = new HttpClientRequestObject
         {
             HttpMethod = HttpMethod.Get,
             RequestURI = lookupByVinVehicleApiEndpoint,
-            ClientHeaders = new Dictionary<string, string>() { { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() } },
+            ClientHeaders = clientHeaders,
             AutoCheckResponseStatusCode = false
         };
 
@@ -116,6 +154,15 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
             return null;
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+        var vehicleResponse = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
+
+        // Map BaseSdkResponse fields
+        if (vehicleResponse != null)
+        {
+            vehicleResponse.BaseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+            vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
+        }
+        
+        return vehicleResponse;
     }    
 }

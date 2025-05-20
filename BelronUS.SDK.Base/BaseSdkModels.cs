@@ -18,16 +18,26 @@ namespace BelronUS.SDK.Base;
 public abstract class BaseSdkRequest
 {
     [Required]
-    public string ApplicationName { get; set; }
+    public string BaseApplicationName { get; set; }
     [Required]
-    public string CorrelationId { get; set; }
+    public Guid BaseCorrelationId { get; set; }
     [Required]
-    public Dictionary<string, string> Headers { get; set; }
+    public Dictionary<string, string> BaseHeaders { get; set; }
     [Required]
-    public string ApiBaseUrl { get; set; }
-    public void Validate()
+    public string BaseApiBaseUrl { get; set; }
+    [Required]
+    public string BaseClientId { get; set; }
+    [Required]
+    public string BaseClientSecret { get; set; }
+
+    public virtual void Validate()
     {
         RequiredHelper.HasRequired(this);
+
+        if (BaseCorrelationId == Guid.Empty)
+    {
+        throw new ValidationException("BaseCorrelationId must not be Empty.");
+    }
     }
 }
 
@@ -45,8 +55,6 @@ public abstract class BaseSdkRequest
 /// </remarks>
 public abstract class BaseSdkResponse
 {
-    public string ApplicationName { get; set; }
-    public string CorrelationId { get; set; }
-    public Dictionary<string, string> Headers { get; set; }
-    public int StatusCode { get; set; }
+    public Dictionary<string, string> BaseHeaders { get; set; }
+    public int BaseStatusCode { get; set; }
 }

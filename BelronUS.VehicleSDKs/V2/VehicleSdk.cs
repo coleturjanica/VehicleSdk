@@ -66,19 +66,11 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Map BaseSdkResponse fields to each item in the list
         if (vehicleResponses != null)
         {
-            var appName = httpResponseMessage.Headers.GetValues("X-Application-Name").FirstOrDefault();
-            var correlationIdHeader = httpResponseMessage.Headers.GetValues("X-Correlation-Id").FirstOrDefault();
-            var correlationId = Guid.Parse(correlationIdHeader);
-
             var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
-            baseHeaders.Remove("X-Application-Name");
-            baseHeaders.Remove("X-Correlation-Id");
             var statusCode = (int)httpResponseMessage.StatusCode;
 
             foreach (var item in vehicleResponses)
             {
-                item.BaseApplicationName = appName;
-                item.BaseCorrelationId = correlationId;
                 item.BaseHeaders = baseHeaders;
                 item.BaseStatusCode = statusCode;
             }
@@ -108,26 +100,25 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
 
         var httpResponseMessage = await _httpClientHelper.CallClientAndGetHttpResponse(_httpClient, httpRequest);
 
-        if (!httpResponseMessage.IsSuccessStatusCode)
+        foreach (var header in httpResponseMessage.Headers)
         {
-            var response = await httpResponseMessage.Content.ReadAsStringAsync();
-            _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
-
-            return null;
+            Console.WriteLine($"Header: {header.Key} = {string.Join(",", header.Value)}");
         }
+
+            if (!httpResponseMessage.IsSuccessStatusCode)
+            {
+                var response = await httpResponseMessage.Content.ReadAsStringAsync();
+                _logger.LogError("Error calling LookupByCarId. Response: {Response}", response);
+
+                return null;
+            }
 
         var vehicleResponse = await httpResponseMessage.Content.ReadFromJsonAsync<VehicleResponseModel>(_jsonSerializerOptions);
 
         // Map BaseSdkResponse fields
         if (vehicleResponse != null)
         {
-            vehicleResponse.BaseApplicationName = httpResponseMessage.Headers.GetValues("X-Application-Name").FirstOrDefault();
-            var correlationIdHeader = httpResponseMessage.Headers.GetValues("X-Correlation-Id").FirstOrDefault();
-            vehicleResponse.BaseCorrelationId = Guid.Parse(correlationIdHeader);
-            var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
-            baseHeaders.Remove("X-Application-Name");
-            baseHeaders.Remove("X-Correlation-Id");
-            vehicleResponse.BaseHeaders = baseHeaders;
+            vehicleResponse.BaseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
             vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
         }
 
@@ -168,13 +159,7 @@ public class VehicleSdk(ISecretManager secretManager, IHttpClientHelper httpClie
         // Map BaseSdkResponse fields
         if (vehicleResponse != null)
         {
-            vehicleResponse.BaseApplicationName = httpResponseMessage.Headers.GetValues("X-Application-Name").FirstOrDefault();
-            var correlationIdHeader = httpResponseMessage.Headers.GetValues("X-Correlation-Id").FirstOrDefault();
-            vehicleResponse.BaseCorrelationId = Guid.Parse(correlationIdHeader);
-            var baseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
-            baseHeaders.Remove("X-Application-Name");
-            baseHeaders.Remove("X-Correlation-Id");
-            vehicleResponse.BaseHeaders = baseHeaders;
+            vehicleResponse.BaseHeaders = httpResponseMessage.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
             vehicleResponse.BaseStatusCode = (int)httpResponseMessage.StatusCode;
         }
         

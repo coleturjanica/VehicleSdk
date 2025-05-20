@@ -55,8 +55,6 @@ public abstract class BaseSdkRequest
 /// </remarks>
 public abstract class BaseSdkResponse
 {
-    public string BaseApplicationName { get; set; }
-    public Guid BaseCorrelationId { get; set; }
     public Dictionary<string, string> BaseHeaders { get; set; }
     public int BaseStatusCode { get; set; }
 }

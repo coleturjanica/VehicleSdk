@@ -1,24 +1,26 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Collections.Generic;
 
-namespace BelronUS.SDK.Base.Helpers;
-
-public static class QueryStringHelper
+namespace BelronUS.SDK.Base.Helpers
 {
-    public static string BuildQueryString<T>(string baseUrl, T request)
+    public static class QueryStringHelper
     {
-        // Use reflection to get all properties of the request object
-        var queryStringDictionary = new Dictionary<string, string>();
-
-        foreach (var property in typeof(T).GetProperties())
+        public static string BuildQueryString<T>(string baseUrl, T request)
         {
-            var value = property.GetValue(request)?.ToString();
-            if (!string.IsNullOrEmpty(value))
-            {
-                queryStringDictionary.Add(property.Name, value);
-            }
-        }
+            // Use reflection to get all properties of the request object
+            var queryStringDictionary = new Dictionary<string, string>();
 
-        // Append the query string to the base URL
-        return QueryHelpers.AddQueryString(baseUrl, queryStringDictionary);
+            foreach (var property in typeof(T).GetProperties())
+            {
+                var value = property.GetValue(request)?.ToString();
+                if (!string.IsNullOrEmpty(value))
+                {
+                    queryStringDictionary.Add(property.Name, value);
+                }
+            }
+
+            // Append the query string to the base URL
+            return QueryHelpers.AddQueryString(baseUrl, queryStringDictionary);
+        }
     }
 }

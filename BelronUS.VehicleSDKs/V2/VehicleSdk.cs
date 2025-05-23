@@ -50,10 +50,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Append Query
             var uri = QueryStringHelper.BuildQueryString(lookupByCarIdVehicleApiEndpoint, request);
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject
@@ -95,10 +97,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Get the base URL from the secret manager
             var lookupByCarIdVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByCarId}/{request.CarId}";
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject
@@ -140,10 +144,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Get the base URL from the secret manager
             var lookupByVinVehicleApiEndpoint = $"{_secretManager.GetBelronApiBaseURL()}{ExternalEndpoints.VehicleApi.GetLookupByVin}/{request.Vin}";
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject
@@ -183,10 +189,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Append Query
             var uri = QueryStringHelper.BuildQueryString(lookupByCarPropsApiEndpoint, request);
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject
@@ -230,10 +238,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Append Query
             var uri = QueryStringHelper.BuildQueryString(lookupByLicensePlateApiEndpoint, request);
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject
@@ -273,10 +283,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Append Query
             var uri = QueryStringHelper.BuildQueryString(getRegistrationLookupPermissableApiEndpoint, request);
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject
@@ -316,10 +328,12 @@ namespace BelronUS.VehicleSDKs.V2
             // Append Query
             var uri = QueryStringHelper.BuildQueryString(searchVehicleApiEndpoint, request);
 
-            var clientHeaders = request.BaseHeaders ?? new Dictionary<string, string>();
-            clientHeaders.Add(_secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret());
-            clientHeaders.Add("X-Application-Name", request.BaseApplicationName);
-            clientHeaders.Add("X-Correlation-ID", request.BaseCorrelationId.ToString());
+            var clientHeaders = new Dictionary<string, string>
+            {
+                { _secretManager.GetOriginVerifyKey(), _secretManager.GetOriginVerifySecret() },
+                { "X-Application-Name", request.BaseApplicationName },
+                { "X-Correlation-ID", request.BaseCorrelationId.ToString() }
+            };
 
             // Construct Request, Send and Receive
             var httpRequest = new HttpClientRequestObject

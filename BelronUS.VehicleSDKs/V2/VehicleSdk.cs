@@ -335,7 +335,7 @@ namespace BelronUS.VehicleSDKs.V2
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
                 var response = await httpResponseMessage.Content.ReadAsStringAsync();
-                _logger.LogError("Error calling LookupByCarProperties. Response: {Response}", response);
+                _logger.LogError("Error calling SearchVehicle. Response: {Response}", response);
 
                 return null;
             }

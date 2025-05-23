@@ -11,10 +11,12 @@ namespace BelronUS.SDK.Base
     /// <remarks>
     /// The following properties are required:
     /// <list type="bullet">
-    /// <item><description>ApplicationName</description></item>
-    /// <item><description>CorrelationId</description></item>
-    /// <item><description>Headers</description></item>
-    /// <item><description>ApiBaseUrl</description></item>
+    /// <item><description>BaseApplicationName</description></item>
+    /// <item><description>BaseCorrelationId</description></item>
+    /// <item><description>BaseHeaders</description></item>
+    /// <item><description>BaseApiBaseUrl</description></item>
+    /// <item><description>BaseClientId</description></item>
+    /// <item><description>BaseClientSecret</description></item>
     /// </list>
     /// </remarks>
     public abstract class BaseSdkRequest
@@ -23,8 +25,6 @@ namespace BelronUS.SDK.Base
         public string BaseApplicationName { get; set; }
         [Required]
         public Guid BaseCorrelationId { get; set; }
-        [Required]
-        public Dictionary<string, string> BaseHeaders { get; set; }
         [Required]
         public string BaseApiBaseUrl { get; set; }
         [Required]
@@ -49,15 +49,11 @@ namespace BelronUS.SDK.Base
     /// <remarks>
     /// The following properties are required:
     /// <list type="bullet">
-    /// <item><description>ApplicationName</description></item>
-    /// <item><description>CorrelationId</description></item>
-    /// <item><description>Headers</description></item>
-    /// <item><description>StatusCode</description></item>
+    /// <item><description>BaseStatusCode</description></item>
     /// </list>
     /// </remarks>
     public abstract class BaseSdkResponse
     {
-        public Dictionary<string, string> BaseHeaders { get; set; }
         public int BaseStatusCode { get; set; }
     }
 }

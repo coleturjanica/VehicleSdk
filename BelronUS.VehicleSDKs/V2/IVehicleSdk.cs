@@ -13,5 +13,9 @@ namespace BelronUS.VehicleSDKs.V2
         Task<VehicleResponseModel> LookupByCarId(LookupByCarIdRequestModel request);
         Task<IEnumerable<VehicleResponseModel>> LookupByAddress(LookupByAddressRequestModel request);
         Task<VehicleResponseModel> LookupByVin(LookupByVinRequestModel request);
+        Task<IEnumerable<VehicleResponseModel>> LookupByCarProperties(LookupByCarPropertiesRequestModel request);
+        Task<VehicleResponseModel> LookupByLicensePlate(LookupByLicensePlateRequestModel request);
+        Task<RegistrationLookupPermissableResponseModel> GetRegistrationLookupPermissable(RegistrationLookupPermissableRequestModel request);
+        Task<IEnumerable<VehicleResponseModel>> SearchVehicle(SearchVehicleRequestModel request);
     }
 }

@@ -19,7 +19,7 @@ namespace BelronUS.SDK.Base.Helpers
                 var value = item.GetValue(request);
                 
                 if (value == null || 
-                    (value is string str && string.IsNullOrEmpty(str)) ||
+                    (value is string str && string.IsNullOrWhiteSpace(str)) ||
                     (value is int intValue && intValue == 0))
                 {
                     missingRequiredFields.Add(item.Name);

@@ -12,16 +12,20 @@ namespace BelronUS.SDK.Base.Helpers
         {
             var missingRequiredFields = new List<string>();
 
-            foreach (var property in typeof(T).GetProperties().Where(p => Attribute.IsDefined(p, typeof(RequiredAttribute))))
+            foreach (var item in from p in request.GetType().GetProperties()
+                                  where Attribute.IsDefined(p, typeof(RequiredAttribute))
+                                  select p)
             {
-                var value = property.GetValue(request);
-                if (value == null || (value is string str && string.IsNullOrEmpty(str)))
+                var value = item.GetValue(request);
+                
+                if (value == null || 
+                    (value is string str && string.IsNullOrWhiteSpace(str)) ||
+                    (value is int intValue && intValue == 0))
                 {
-                    missingRequiredFields.Add(property.Name);
+                    missingRequiredFields.Add(item.Name);
                 }
             }
 
-            // If there are any missing required fields, create the error message
             if (missingRequiredFields.Any())
             {
                 var errorMessage = new StringBuilder("The following required properties are missing or empty: ");
